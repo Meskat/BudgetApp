@@ -1,10 +1,10 @@
 /**
  * BUDGET CONTROLLER
  */
-// controller słuzy do oddzielania danych - obiektowo, stworzone sa z ifee co zapewnia prywatnosc danyh jezeli tego chcemy
+
+//controller splits data for separate logical parts
 var budgetController = (function () {
 
-    // function constructor - tworzymy 2 konstruktory obiektów dla wydatkow i przychodów
     var Expense = function(id, description, value) {
         this.id = id;
         this.description = description;
@@ -17,8 +17,6 @@ var budgetController = (function () {
         this.value = value;
     };
 
-    // calculate total - prywatra funkcja zwracajaca w calculate budget
-
     var calculateTotal = function(type) {
         var sum = 0;
         data.allItems[type].forEach(function(currenElement) {
@@ -28,7 +26,6 @@ var budgetController = (function () {
         data.totals[type] = sum;
     };
 
-    // tworzymy strukture danych. przechowywanych w zagnieżdzonym obiekcie,
     var data = {
         allItems: {
             exp: [],
@@ -39,33 +36,45 @@ var budgetController = (function () {
             inc: 0
         },
         budget: 0,
-        percentage: -1 // -1 jest wartoscia ktorej uzywamy gdy cos nie istnieje
+        percentage: -1
     };
 
-    //zwracamy obiekt (ktorego dany beda dostepny na zewnatrz === BO MA FUNKCJE ktore maja z parametrach dostep do danych powyzej)
     return {
 
         addItem: function(type, des, val) {
             var newItem, ID;
 
-            // sposob na utworzenie unikalnego id bez problemow z usuwaniem elementow i kolizji z ich iloscia
+            // create special id to items in the array
             if(data.allItems[type].length > 0) {
                 ID = data.allItems[type][data.allItems[type].length -1].id +1;
             }else {
                 ID = 0;
             }
 
-            // sprawdzamy typ i w zaleznosci od niego tworzymy nowy obiekt przychodów lub wydatków
+            // checking the type to create new item with proper type
             if (type === 'exp') {
                 newItem = new Expense(ID, des, val);
             } else if (type === 'inc') {
                 newItem = new Income(ID, des, val);
             }
 
-            //do obiektu z danymi w zaleznosci od typu!!! pushujemy stworzony obiekt i go zwracamy
             data.allItems[type].push(newItem);
             return newItem;
 
+        },
+
+        deleteItem: function(type, id) {
+
+            // example of using map method to loop over the array - map method returns new array
+            ids = data.allItems[type].map(function(currentElement) {
+                return currentElement.id;
+            });
+
+            index = ids.indexOf(id);
+
+            if (index !== -1 ) {
+                data.allItems[type].splice(index, 1);
+            }
         },
 
         calculateBudget: function() {
@@ -83,30 +92,30 @@ var budgetController = (function () {
                 data.percentage = -1;
             }
         },
+
         getBudget: function() {
           return {
               budget: data.budget,
               totalInc: data.totals.inc,
               totalExp: data.totals.exp,
               percentage: data.percentage
-
           }
         },
+
         testing: function () {
             console.log("data structure", data);
         }
     };
-
 })();
 
 /**
  * UI CONTROLLER
  */
 
-//kontroler od interakcji i interfejsem (stworzony jak KAŻDY kontroler z wykorzystaniem IFEE )
+//controller to communicate with interface
 var UIController = (function () {
 
-    // tworzymy obiekt w ktorym klucz-wartosc stanowią klasy z html - w ten sposob bedzie ich sie uzywac latwiej i jest to bardzo DRY
+    // create object with HTML selector
     var DOMStrings = {
         inputType: '.add__type',
         inputDescription: '.add__description',
@@ -117,30 +126,33 @@ var UIController = (function () {
         budgetLabel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expenseLabel: '.budget__expenses--value',
-        percentageLabel: '.budget__expenses--percentage'
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container'
     };
 
-    // zwracamy obiekt z funkcjami- by przekazac to potem dalej!!!
+
     return {
         getInput: function () {
 
-            // zwracamy obiekt z wybraniem elementow dom. dry i łatwosc i uzywaniu!!!
             return {
-                type: document.querySelector(DOMStrings.inputType).value, // will be for income and expenses
+                // return object with html selectors - DRY way of communicating with DOM
+                type: document.querySelector(DOMStrings.inputType).value, // will be for both income and expenses
                 description: document.querySelector(DOMStrings.inputDescription).value,
                 value: parseFloat(document.querySelector(DOMStrings.inputValue).value),
                 inputBtn: document.querySelector(DOMStrings.inputBtn)
             };
         },
-        // zwracamy na zewnatrz  funkcje z klasami html
+
+        // passing function (to global controller) with html selectors
         getDOMStrings: function() {
             return DOMStrings;
         },
+
         addListItem: function (obj, type) {
             var html, newHtml, element;
 
             if(type === 'inc') {
-                html = '<div class="item" id="income-%id%">'+
+                html = '<div class="item" id="inc-%id%">'+
                     '<div class="item__description">%description%</div>'+
                     '<div class="budget__flex-container">'+
                     '<div class="item__value">+ %value%</div>'+
@@ -152,7 +164,7 @@ var UIController = (function () {
 
                 element = document.querySelector(DOMStrings.incomeContainer);
             }else if (type === 'exp') {
-                html = '<div class="item" id="expense-%id%">' +
+                html = '<div class="item" id="exp-%id%">' +
                     '<div class="item__description">%description%</div>' +
                     '<div class="budget__flex-container">' +
                     '<div class="item__value">- %value%</div>' +
@@ -170,18 +182,19 @@ var UIController = (function () {
             element.insertAdjacentHTML('beforeend', newHtml);
             //html.replace('%procentage%', obj.procentage);
         },
+
         clearFields: function() {
             var fields, fieldsArr;
 
             fields = document.querySelectorAll(DOMStrings.inputDescription + ',' + DOMStrings.inputValue);
 
-            // uzycie prototypu by wywolac metode tablicy na liscie
+            // example of using prototype
             fieldsArr = Array.prototype.slice.call(fields);
 
             fieldsArr.forEach(function(element) {
                element.value = "";
             });
-            // ustawiamy focus spowrotem na 1 element
+            // setting focus back for the first element
             fieldsArr[0].focus();
         },
 
@@ -195,18 +208,15 @@ var UIController = (function () {
             } else {
                 document.querySelector(DOMStrings.percentageLabel).textContent = "\u2014";
             }
-
         }
-
     }
-
 })();
 
 /**
  * GLOBAL APP CONTROLLER
  */
 
-// globalny kontroler sluzacy do przekazywania danych miedzy kontrolerami a takze do przekazywania event listenerow
+// global controller for managing data between components
 var controller = (function (budgetCtrl, UICtrl) {
 
     var setUpEventListeners = function() {
@@ -218,8 +228,8 @@ var controller = (function (budgetCtrl, UICtrl) {
                 console.log('enter');
                 ctrlAddItem();
             }
-
         });
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
     };
 
     var updateBudget = function() {
@@ -249,7 +259,23 @@ var controller = (function (budgetCtrl, UICtrl) {
             // 4. calculate  and upda budget
             updateBudget();
         }
+    };
 
+    var ctrlDeleteItem = function(event) {
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+        if(itemID.match("inc || exp")) {
+
+            splitID = itemID.split('-');
+            type = splitID[0];
+            ID = parseInt(splitID[1]);
+
+            // 1. delete item from data structure
+            budgetCtrl.deleteItem(type, ID);
+            // 2. delete the item from the ui
+
+            // 3 update and show new budget
+        }
     };
 
     return {
@@ -266,4 +292,4 @@ var controller = (function (budgetCtrl, UICtrl) {
 
 })(budgetController, UIController);
 
-controller.init();
+controller.init(); // app start!
