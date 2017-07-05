@@ -183,6 +183,12 @@ var UIController = (function () {
             //html.replace('%procentage%', obj.procentage);
         },
 
+        deleteListItem: function(selectorId) {
+
+            var element = document.getElementById(selectorId);
+            element.parentNode.removeChild(element);
+        },
+
         clearFields: function() {
             var fields, fieldsArr;
 
@@ -273,8 +279,9 @@ var controller = (function (budgetCtrl, UICtrl) {
             // 1. delete item from data structure
             budgetCtrl.deleteItem(type, ID);
             // 2. delete the item from the ui
-
+            UICtrl.deleteListItem(itemID);
             // 3 update and show new budget
+            updateBudget();
         }
     };
 
