@@ -9,6 +9,20 @@ var budgetController = (function () {
         this.id = id;
         this.description = description;
         this.value = value;
+        this.percentage = -1;
+    };
+
+    Expense.prototype.calculatePercentage = function (totalIncome) {
+
+        if (totalIncome > 0) {
+            this.percentage = Math.round((this.value / totalIncome) * 100);
+        } else {
+            this.percentage = -1;
+        }
+    };
+
+    Expense.prototype.getPercentage = function () {
+      return this.percentage;
     };
 
     var Income = function(id, description, value) {
@@ -29,7 +43,8 @@ var budgetController = (function () {
     var data = {
         allItems: {
             exp: [],
-            inc: []
+            inc: [],
+            expPercentages:[]
         },
         totals: {
             exp: 0,
@@ -93,6 +108,21 @@ var budgetController = (function () {
             }
         },
 
+        calculatePercentages: function () {
+            data.allItems.exp.forEach(function (currentElement) {
+                currentElement.calculatePercentage(data.totals.inc);
+            });
+        },
+
+        getPercentages: function () {
+
+          var allPercentages = data.allItems.exp.map(function (currentElement) {
+              return currentElement.getPercentage();
+          });
+
+          return allPercentages;
+        },
+
         getBudget: function() {
           return {
               budget: data.budget,
@@ -127,6 +157,7 @@ var UIController = (function () {
         incomeLabel: '.budget__income--value',
         expenseLabel: '.budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
+        expPercentageLabel: '.item__percentage',
         container: '.container'
     };
 
@@ -168,7 +199,7 @@ var UIController = (function () {
                     '<div class="item__description">%description%</div>' +
                     '<div class="budget__flex-container">' +
                     '<div class="item__value">- %value%</div>' +
-                    '<div class="item__percentage">21%</div>' +
+                    '<div class="item__percentage"></div>' +
                     '<div class="item__delete">' +
                     '<button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>' +
                     '</div>' +
@@ -214,6 +245,25 @@ var UIController = (function () {
             } else {
                 document.querySelector(DOMStrings.percentageLabel).textContent = "\u2014";
             }
+        },
+
+        displayPercentages: function (percentages) {
+            var fields = document.querySelectorAll(DOMStrings.expPercentageLabel);
+
+            // reusable code for looping ;)
+            var nodeListForEach = function (list, callback) {
+                for (var i= 0; i< list.length; i++) {
+                    callback(list[i], i );
+                }
+            };
+            nodeListForEach(fields, function (current, index) {
+
+                if (percentages[index] > 0 ) {
+                    current.textContent = percentages[index] + '%';
+                } else {
+                    current.textContent = "\u2014";
+                }
+            });
         }
     }
 })();
@@ -247,6 +297,16 @@ var controller = (function (budgetCtrl, UICtrl) {
         UICtrl.displayBudget(budget);
     };
 
+    var updatePercentages = function() {
+        // 1. calculate percentages
+        budgetCtrl.calculatePercentages();
+        // 2.read percentages from budget controller
+        var percentages = budgetCtrl.getPercentages();
+        // 3. Update the UI with new values
+        UICtrl.displayPercentages(percentages);
+    };
+
+
     var ctrlAddItem = function() {
 
         //deklarowanie przed nadaniem wartosci jest wazne dla HOISTINGU!!!
@@ -262,8 +322,10 @@ var controller = (function (budgetCtrl, UICtrl) {
             UICtrl.addListItem(newItem, input.type);
             // 3.1 clear fields
             UICtrl.clearFields();
-            // 4. calculate  and upda budget
+            // 4. calculate  and update budget
             updateBudget();
+
+            // 5. calculate and update percentages
         }
     };
 
@@ -282,6 +344,8 @@ var controller = (function (budgetCtrl, UICtrl) {
             UICtrl.deleteListItem(itemID);
             // 3 update and show new budget
             updateBudget();
+
+            // 5. calculate and update percentages
         }
     };
 
