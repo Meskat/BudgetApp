@@ -1,7 +1,7 @@
 /**
  * BUDGET CONTROLLER
  */
-
+'use strict';
 //controller splits data for separate logical parts
 var budgetController = (function () {
 
@@ -79,6 +79,8 @@ var budgetController = (function () {
         },
 
         deleteItem: function(type, id) {
+            var ids,
+                index;
 
             // example of using map method to loop over the array - map method returns new array
             ids = data.allItems[type].map(function(currentElement) {
@@ -161,6 +163,33 @@ var UIController = (function () {
         container: '.container'
     };
 
+    var formatNumber = function (num, type) {
+
+        var numSplit,
+            int,
+            dec;
+        // add plus or minus before number
+
+        // add 2 decimal points -> toFixed method of string prototype
+        num = Math.abs(num); // method from Math object
+        num = num.toFixed(2);
+
+        // comma separating the thousands
+        // 1. split number for integer and decimal part
+        numSplit = num.split('.');
+        int = numSplit[0];
+        dec = numSplit[1];
+
+        // 2. check number
+        if (int.length > 3) {
+            // 3. Return parts of a string using substring method add comma where is needed
+            int = int.substr(0, int.length - 3 ) + "," + int.substr(int.length - 3, int.length)
+        }
+
+        return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
+
+
+    };
 
     return {
         getInput: function () {
@@ -186,7 +215,7 @@ var UIController = (function () {
                 html = '<div class="item" id="inc-%id%">'+
                     '<div class="item__description">%description%</div>'+
                     '<div class="budget__flex-container">'+
-                    '<div class="item__value">+ %value%</div>'+
+                    '<div class="item__value"> %value%</div>'+
                     '<div class="item__delete">'+
                     '<button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>'+
                     '</div>'+
@@ -198,7 +227,7 @@ var UIController = (function () {
                 html = '<div class="item" id="exp-%id%">' +
                     '<div class="item__description">%description%</div>' +
                     '<div class="budget__flex-container">' +
-                    '<div class="item__value">- %value%</div>' +
+                    '<div class="item__value"> %value%</div>' +
                     '<div class="item__percentage"></div>' +
                     '<div class="item__delete">' +
                     '<button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>' +
@@ -209,7 +238,7 @@ var UIController = (function () {
             }
             newHtml = html.replace('%id%', obj.id);
             newHtml = newHtml.replace('%description%', obj.description);
-            newHtml = newHtml.replace('%value%', obj.value);
+            newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
             element.insertAdjacentHTML('beforeend', newHtml);
             //html.replace('%procentage%', obj.procentage);
         },
@@ -236,9 +265,11 @@ var UIController = (function () {
         },
 
         displayBudget: function(obj) {
-            document.querySelector(DOMStrings.budgetLabel).textContent = obj.budget;
-            document.querySelector(DOMStrings.incomeLabel).textContent = "+ " + obj.totalInc;
-            document.querySelector(DOMStrings.expenseLabel).textContent = "- " + obj.totalExp;
+            var type;
+            obj.budget > 0 ? type = 'inc' : type = 'exp';
+            document.querySelector(DOMStrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+            document.querySelector(DOMStrings.incomeLabel).textContent =  formatNumber(obj.totalInc, 'inc');
+            document.querySelector(DOMStrings.expenseLabel).textContent = formatNumber(obj.totalExp, 'exp');
 
             if (obj.percentage >0 ) {
                 document.querySelector(DOMStrings.percentageLabel).textContent = obj.percentage + "%";
@@ -330,6 +361,10 @@ var controller = (function (budgetCtrl, UICtrl) {
     };
 
     var ctrlDeleteItem = function(event) {
+        var itemID,
+            splitID,
+            type,
+            ID;
         itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
 
         if(itemID.match("inc || exp")) {
