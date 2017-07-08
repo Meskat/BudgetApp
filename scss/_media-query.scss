@@ -2,7 +2,7 @@
 **** PHONES - LANDSCAPE MODE *****
 *********************************/
 
-@media only screen and (min-device-width : 320px) and (max-device-width : 732px) and (orientation: landscape) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 732px) and (orientation: landscape) {
   .top {
     height: 100vh;
   }
@@ -12,54 +12,56 @@
 **** IPADS - LANDSCAPE MODE ******
 *********************************/
 
-@media only screen and (min-device-width : 768px) and (max-device-width : 1224px) {
+@media only screen and (min-device-width: 768px) and (max-device-width: 1224px) {
   .top {
     height: 50vh;
   }
-  .budget__title {
-    font-size: 2em;
-  }
+  .budget {
 
-  .budget__value {
-    font-size: 3em;
-  }
+    &__title {
+      font-size: 2em;
+    }
 
-  .budget__income,
-  .budget__expenses {
-    padding: 2vh;
-    width: 60vw;
-    font-size: 1.5em;
+    &__value {
+      font-size: 3em;
+    }
+
+    &__income,
+    &__expenses {
+      padding: 2vh;
+      width: 60vw;
+      font-size: 1.5em;
+    }
   }
 
   .add {
     padding: 1em;
-  }
 
-  .add__container {
-    max-width: 75vw;
-    justify-content: space-around;
-  }
+    &__container {
+      max-width: 75vw;
+      justify-content: space-around;
+    }
 
-  .add__type {
-    width: 3em;
-    height: 2.5em;
-    font-size: 1.5em;
-  }
+    &__type {
+      width: 3em;
+      height: 2.5em;
+      font-size: 1.5em;
+    }
 
-  .add__description,
-  .add__value {
-    font-size: 1em;
-  }
+    &__description,
+    &__value {
+      font-size: 1em;
+    }
 
-  .add__btn {
-    font-size: 3em;
+    &__btn {
+      font-size: 3em;
+    }
   }
 
   .icome__title,
-  .expenses__title{
+  .expenses__title {
     font-size: 1.5em;
   }
-
 
   .container {
     flex-direction: row;
@@ -80,59 +82,55 @@
 
 }
 
-
 ///*********************************
 //**** DESKTOPS AND LAPTOPS ********
 //*********************************/
 
-@media only screen  and (min-width : 1224px) {
+@media only screen and (min-width: 1224px) {
   .top {
     height: 40vh;
   }
-
   .budget {
     max-width: 350px;
     flex: 1 0 auto;
+
+    &__title {
+      font-size: 1.5em;
+    }
+
+    &__value {
+      font-size: 46px;
+      margin: 2vh 0;
+    }
+
+    &__income,
+    &__expenses {
+      width: 30vw;
+      padding: 12px;
+      font-size: 1.5em;
+    }
+
+    &__income {
+      margin-bottom: 1.5vh;
+    }
+
+    &__income--text,
+    &__expenses--text {
+      font-size: 0.8em;
+    }
+
+    &__income--percentage,
+    &__expenses--percentage {
+      width: 34px;
+      font-size: 11px;
+      padding: 3px 0;
+      margin-left: 10px;
+    }
+
+    &__expenses--percentage {
+      border-radius: 3px;
+    }
   }
-
-  .budget__title {
-    font-size: 1.5em;
-  }
-
-  .budget__value {
-    font-size: 46px;
-    margin: 2vh 0;
-  }
-
-  .budget__income,
-  .budget__expenses {
-    width: 30vw;
-    padding: 12px;
-    font-size: 1.5em;
-  }
-
-
-  .budget__income {
-    margin-bottom: 1.5vh;
-  }
-
-  .budget__income--text,
-  .budget__expenses--text {
-    font-size: 0.8em;
-  }
-
-  .budget__income--percentage,
-  .budget__expenses--percentage {
-    width: 34px;
-    font-size: 11px;
-    padding: 3px 0;
-    margin-left: 10px;
-  }
-
-  .budget__expenses--percentage {
-    border-radius: 3px;
-  }
-
 
   /**********************************************
   *** BOTTOM PART
@@ -141,44 +139,51 @@
   /***** FORM *****/
   .add {
     padding: 14px;
+
+    &__container {
+      margin: 0 auto;
+    }
+
+    &__type {
+      width: 55px;
+      height: 44px;
+      margin-right: 10px;
+      padding: 5px;
+      font-size: 18px;
+    }
+
+    &__description,
+    &__value {
+      font-size: 14px;
+      padding: 12px 15px;
+      margin-right: 10px;
+    }
+
+    &__description {
+      width: 35vw;
+    }
+    &__value {
+      width: 100px;
+    }
+
+    &__btn {
+      font-size: 2.5em;
+      cursor: pointer;
+      display: inline-block;
+      line-height: 1.1;
+      margin-left: 10px;
+    }
+
+    &__btn:focus {
+      outline: none;
+    }
   }
-
-  .add__container {
-    margin: 0 auto;
-  }
-
-  .add__type {
-    width: 55px;
-    height: 44px;
-    margin-right: 10px;
-    padding: 5px;
-    font-size: 18px;
-  }
-
-  .add__description,
-  .add__value {
-    font-size: 14px;
-    padding: 12px 15px;
-    margin-right: 10px;
-  }
-
-  .add__description { width: 35vw;}
-  .add__value { width: 100px;}
-
-  .add__btn {
-    font-size: 2.5em;
-    cursor: pointer;
-    display: inline-block;
-    line-height: 1.1;
-    margin-left: 10px;
-  }
-
-  .add__btn:focus { outline: none; }
 
   /***** LISTS *****/
   .container {
     width: 100%;
     margin: 10vh 0;
+    flex-direction: row;
   }
 
   .income,
@@ -190,35 +195,24 @@
     margin-right: 50px;
   }
 
-  h2 {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-
-  .item {
-    padding: 13px;
-  }
   .icome__title,
-  .expenses__title{
+  .expenses__title {
     font-size: 1.5em;
-  }
+    margin-bottom: 20px;
 
-
-  .container {
-    flex-direction: row;
-  }
-
-  .item__description,
-  .item__value {
-    font-size: 1em;
   }
 
   .item {
-    padding: 5px;
-  }
+    padding: 1em;
 
-  .item__percentage {
-    font-size: .7em;
+    &__description,
+    &__value {
+      font-size: 1em;
+    }
+
+    &__percentage {
+      font-size: .7em;
+    }
   }
 }
 

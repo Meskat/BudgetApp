@@ -1,16 +1,7 @@
-
-
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-.clearfix::after {
-    content: "";
-    display: table;
-    clear: both;
 }
 
 body {
@@ -22,7 +13,6 @@ body {
     font-weight: 400;
 }
 
-.right { float:right; }
 .red { color: #d43f42 !important; }
 .red-focus:focus { border: 1px solid #d43f42 !important; }
 
