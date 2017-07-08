@@ -132,10 +132,6 @@ var budgetController = (function () {
               totalExp: data.totals.exp,
               percentage: data.percentage
           }
-        },
-
-        testing: function () {
-            console.log("data structure", data);
         }
     };
 })();
@@ -159,6 +155,7 @@ var UIController = (function () {
         incomeLabel: '.budget__income--value',
         expenseLabel: '.budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
+        monthLabel: '.budget__title--month',
         expPercentageLabel: '.item__percentage',
         container: '.container'
     };
@@ -295,6 +292,17 @@ var UIController = (function () {
                     current.textContent = "\u2014";
                 }
             });
+        },
+
+        displayMonth: function () {
+            var date, local, month;
+
+            date = new Date();
+            local = "en-us";
+            month = date.toLocaleString(local, {month : "long"});
+
+            return document.querySelector(DOMStrings.monthLabel).textContent = month;
+
         }
     }
 })();
@@ -395,6 +403,7 @@ var controller = (function (budgetCtrl, UICtrl) {
                 totalInc: 0,
                 totalExp:  0,
                 percentage: -1});
+            UICtrl.displayMonth();
             setUpEventListeners();
         }
     }
